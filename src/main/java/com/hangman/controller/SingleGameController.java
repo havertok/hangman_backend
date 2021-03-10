@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hangman.entities.HangmanSinglePuzzle;
 import com.hangman.service.PuzzleService;
 
-@CrossOrigin(maxAge = 3600)
+@CrossOrigin(maxAge = 3600) //for CORS errors
 @RestController
 @RequestMapping("/puzzles")
 public class SingleGameController {
@@ -23,11 +24,22 @@ public class SingleGameController {
 	@Autowired
 	public SingleGameController(PuzzleService ps) {
 		this.ps = ps;
+		ps.addTestPuzzlesToDB(); //REMOVE ME WHEN NO LONGER TESTING
 	}
 	
 	@RequestMapping(value="/all", method=RequestMethod.GET, produces = "application/json")
-	public ResponseEntity<List<HangmanSinglePuzzle>> getAllCampaigns(){
+	public ResponseEntity<List<HangmanSinglePuzzle>> getAllPuzzless(){
 		return new ResponseEntity<>(ps.getAllPuzzles(), HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/modifyOne", method=RequestMethod.POST)
+	public ResponseEntity<String> postOnePuzzle(@RequestBody HangmanSinglePuzzle puzz){
+		boolean foundPuzz = ps.modifyPuzzle(puzz);
+		if(foundPuzz) {
+			return new ResponseEntity<>("We got it dudes!", HttpStatus.ACCEPTED);
+		} else {
+			return new ResponseEntity<>("There is no such puzzle or puzzle is malformed.", HttpStatus.BAD_REQUEST);
+		}
 	}
 
 }

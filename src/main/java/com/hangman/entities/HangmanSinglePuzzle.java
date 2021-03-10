@@ -22,11 +22,10 @@ public class HangmanSinglePuzzle {
 		super();
 	}
 	
-	public HangmanSinglePuzzle(String word, int maxMisses) {
+	public HangmanSinglePuzzle(String word, int guessesTaken) {
 		super();
 		this.hiddenWord = word;
-		this.maxMisses = maxMisses;
-		guessesTaken = 0;
+		this.guessesTaken = guessesTaken;
 		isSolved = false;
 	}
 	
@@ -38,9 +37,6 @@ public class HangmanSinglePuzzle {
 
 	@Column(name = "PUZZLE_WORD", nullable = false)
 	private String hiddenWord;
-	
-	@Column(name = "PUZZLE_MAX_MISSES")
-	private int maxMisses;
 	
 	@Column(name = "PUZZLE_GUESSES_TAKEN")
 	private int guessesTaken;
@@ -69,14 +65,6 @@ public class HangmanSinglePuzzle {
 		this.hiddenWord = hiddenWord;
 	}
 
-	public int getMaxMisses() {
-		return maxMisses;
-	}
-
-	public void setMaxMisses(int maxMisses) {
-		this.maxMisses = maxMisses;
-	}
-
 	public int getGuessesTaken() {
 		return guessesTaken;
 	}
@@ -103,8 +91,8 @@ public class HangmanSinglePuzzle {
 
 	@Override
 	public String toString() {
-		return "HangmanSinglePuzzle [ID=" + ID + ", hiddenWord=" + hiddenWord + ", maxMisses=" + maxMisses
-				+ ", guessesTaken=" + guessesTaken + ", guessedLetters=" + guessedLetters + ", isSolved=" + isSolved
+		return "HangmanSinglePuzzle [ID=" + ID + ", hiddenWord=" + hiddenWord + ", guessesTaken=" + 
+				guessesTaken + ", guessedLetters=" + guessedLetters + ", isSolved=" + isSolved
 				+ "]";
 	}
 
