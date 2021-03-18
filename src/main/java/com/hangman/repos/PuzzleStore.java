@@ -9,6 +9,6 @@ import com.hangman.entities.*;
 //Will do a custom one without jpa magic later
 @Repository(value="PuzzleStore")
 @Transactional
-public interface PuzzleStore extends JpaRepository<HangmanSinglePuzzle, Integer>  {
+public interface PuzzleStore extends JpaRepository<SinglePuzzle, Integer>  {
 
 }

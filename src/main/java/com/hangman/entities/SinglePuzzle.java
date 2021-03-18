@@ -16,13 +16,13 @@ import javax.persistence.Table;
 //a number of guesses taken, and a list of letters guessed. Also will have a solved boolean
 @Entity
 @Table(name = "PUZZLES")
-public class HangmanSinglePuzzle {
+public class SinglePuzzle {
 	
-	public HangmanSinglePuzzle() {
+	public SinglePuzzle() {
 		super();
 	}
 	
-	public HangmanSinglePuzzle(String word, int guessesTaken) {
+	public SinglePuzzle(String word, int guessesTaken) {
 		super();
 		this.hiddenWord = word;
 		this.guessesTaken = guessesTaken;
@@ -98,8 +98,8 @@ public class HangmanSinglePuzzle {
 
 	@Override
 	public boolean equals(Object obj) {
-		if(obj instanceof HangmanSinglePuzzle) {
-			if(this.hiddenWord.equals(((HangmanSinglePuzzle) obj).hiddenWord) && this.isSolved == ((HangmanSinglePuzzle)obj).isSolved) {
+		if(obj instanceof SinglePuzzle) {
+			if(this.hiddenWord.equals(((SinglePuzzle) obj).hiddenWord) && this.isSolved == ((SinglePuzzle)obj).isSolved) {
 				return true;
 			} else {
 				return false;

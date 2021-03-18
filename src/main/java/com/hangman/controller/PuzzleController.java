@@ -5,16 +5,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hangman.entities.HangmanSinglePuzzle;
+import com.hangman.entities.SinglePuzzle;
 import com.hangman.service.PuzzleService;
 
-@CrossOrigin(maxAge = 3600) //for CORS errors
 @RestController
 @RequestMapping("/puzzles")
 public class PuzzleController {
@@ -28,12 +26,12 @@ public class PuzzleController {
 	}
 	
 	@RequestMapping(value="/all", method=RequestMethod.GET, produces = "application/json")
-	public ResponseEntity<List<HangmanSinglePuzzle>> getAllPuzzless(){
+	public ResponseEntity<List<SinglePuzzle>> getAllPuzzless(){
 		return new ResponseEntity<>(ps.getAllPuzzles(), HttpStatus.OK);
 	}
 	
-	@RequestMapping(value="/modifyOne", method=RequestMethod.POST)
-	public ResponseEntity<String> postOnePuzzle(@RequestBody HangmanSinglePuzzle puzz){
+	@RequestMapping(value="/modify", method=RequestMethod.POST)
+	public ResponseEntity<String> postOnePuzzle(@RequestBody SinglePuzzle puzz){
 		boolean foundPuzz = ps.modifyPuzzle(puzz);
 		if(foundPuzz) {
 			return new ResponseEntity<>("We got it dudes!", HttpStatus.ACCEPTED);
@@ -43,7 +41,7 @@ public class PuzzleController {
 	}
 	
 	@RequestMapping(value="/add", method=RequestMethod.POST)
-	public ResponseEntity<String> addNewPozzle(@RequestBody HangmanSinglePuzzle puzz){
+	public ResponseEntity<String> addNewPozzle(@RequestBody SinglePuzzle puzz){
 		boolean foundPuzz = ps.modifyPuzzle(puzz);
 		if(foundPuzz) {
 			return new ResponseEntity<>("That puzzle already exists, play the game to modify it!.", HttpStatus.BAD_REQUEST);

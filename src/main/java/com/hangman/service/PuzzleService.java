@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.hangman.entities.HangmanSinglePuzzle;
+import com.hangman.entities.SinglePuzzle;
 import com.hangman.repos.PuzzleStore;
 
 //Business logic class for the SingleGameController etc.
@@ -21,11 +21,11 @@ public class PuzzleService {
 	
 	//Temp method to test
 	public void addTestPuzzlesToDB() {
-		pRepo.save(new HangmanSinglePuzzle("testword", 0));
-		HangmanSinglePuzzle addme = new HangmanSinglePuzzle("testwordtwo", 3);
-		HangmanSinglePuzzle addme2 = new HangmanSinglePuzzle("testwordthree", 1);
-		HangmanSinglePuzzle addme3 = new HangmanSinglePuzzle("testwordfour", 5);
-		HangmanSinglePuzzle addme4 = new HangmanSinglePuzzle("testwordfive", 2);
+		pRepo.save(new SinglePuzzle("testword", 0));
+		SinglePuzzle addme = new SinglePuzzle("testwordtwo", 3);
+		SinglePuzzle addme2 = new SinglePuzzle("testwordthree", 1);
+		SinglePuzzle addme3 = new SinglePuzzle("testwordfour", 5);
+		SinglePuzzle addme4 = new SinglePuzzle("testwordfive", 2);
 		ArrayList<Character> testChar = new ArrayList<>();
 		testChar.add('c');
 		testChar.add('a');
@@ -51,8 +51,8 @@ public class PuzzleService {
 		pRepo.save(addme4);
 	}
 	
-	public HangmanSinglePuzzle getPuzzleById(int ID) {
-		Optional<HangmanSinglePuzzle> result = pRepo.findById(ID);
+	public SinglePuzzle getPuzzleById(int ID) {
+		Optional<SinglePuzzle> result = pRepo.findById(ID);
 		if(result.isPresent()) {
 			return result.get();
 		} else {
@@ -61,13 +61,13 @@ public class PuzzleService {
 	}
 
 	//right now just returns all found puzzles regardless of completion status
-	public List<HangmanSinglePuzzle> getAllPuzzles(){
+	public List<SinglePuzzle> getAllPuzzles(){
 		
-		ArrayList<HangmanSinglePuzzle> temp = new ArrayList<>();
+		ArrayList<SinglePuzzle> temp = new ArrayList<>();
 		try {
 			for(Object o : pRepo.findAll()) {
-				if(o instanceof HangmanSinglePuzzle) {
-					temp.add((HangmanSinglePuzzle)o);
+				if(o instanceof SinglePuzzle) {
+					temp.add((SinglePuzzle)o);
 				}
 			}
 		} catch(Exception err){
@@ -79,7 +79,7 @@ public class PuzzleService {
 	}
 	
 	//First gets a puzzle by it's ID, then updates it, returning true or false depending on whether it found such a puzzle
-	public boolean modifyPuzzle(HangmanSinglePuzzle puzz) {
+	public boolean modifyPuzzle(SinglePuzzle puzz) {
 		try {
 			pRepo.save(puzz);
 			return true;
