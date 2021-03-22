@@ -34,13 +34,13 @@ public class UserController {
 			if(inputData.containsKey("username") && inputData.containsKey("password")) {
 				UserModel newuser = new UserModel(inputData.get("username"), inputData.get("password"));
 			} else {
-				return new ResponseEntity<>("Missing parameters in request object!", HttpStatus.BAD_REQUEST);
+				return new ResponseEntity<>("Malformed user object sent!", HttpStatus.BAD_REQUEST);
 			}
 		} else {
 			return new ResponseEntity<>("Empty payload sent!", HttpStatus.BAD_REQUEST);
 		}
 		//TODO: Need to setup tokens and stuff here
-		
+		//this is where we will actually authenticate, on hold for now
 		return new ResponseEntity<>("You are logged in!", HttpStatus.OK);
 	}
 	

@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hangman.entities.UserModel;
 import com.hangman.repos.UserStore;
@@ -84,6 +85,6 @@ public class UserService implements UserDetailsService{
         UserDetails userDetails = User.withUsername(user.getUsername()).password(user.getPassword()).authorities("USER").build(); //Custom UserDetails
         return userDetails;
 	}
-
+	
 
 }

@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -49,7 +50,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	      config.setAllowCredentials(true);
 	      //"http://localhost:3000" is what did it, I will have to read up on url filtering syntax
 	      config.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:3000/Home", "http://localhost:3000/Login"));
-	      config.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Access-Control-Allow-Origin"));
+	      config.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Access-Control-Allow-Origin", "X-Auth-Token"));
 	      //config.setExposedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Authorization", "Access-Control-Request-Allow-Origin", "Access-Control-Allow-Credentials"));
 	      config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "OPTIONS", "DELETE", "PATCH"));
 	      source.registerCorsConfiguration("/**", config);
@@ -60,9 +61,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	  protected void configure(HttpSecurity http) throws Exception {  
 	      http
 	       .addFilterBefore(corsFilter(), SessionManagementFilter.class)
-	       .csrf().disable()//another attempt to fix cors
+	       .csrf().disable() //another attempt to fix cors
 	       .authorizeRequests()
 	         .antMatchers("/puzzles/all", "/puzzles/modify", "/register", "/user/all").permitAll() //puzzles/modify and /user/all will eventuall be blocked
+	         .antMatchers(HttpMethod.OPTIONS, "/**").permitAll() //Should allow cors freflight (options) requests
 	         .anyRequest().authenticated() 
 	         .and()
 	       .formLogin() 
