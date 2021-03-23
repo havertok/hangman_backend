@@ -1,6 +1,10 @@
 package com.hangman.entities;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -61,8 +65,9 @@ public class UserModel implements UserDetails { //Serializable ?
 	private int winCount;
 	
 	//Needed to implement UserDetails
+	//Granted Authority can be extended, in case I want to implement my own intead of just returned null
 	@ElementCollection
-	private Collection<? extends GrantedAuthority> authorities;
+	private Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
 	
 	//TODO: Add roles (mod/user distinction)
 
@@ -141,7 +146,7 @@ public class UserModel implements UserDetails { //Serializable ?
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
+		// TODO: maybe implement roles/authorities later
 		return null;
 	}
 

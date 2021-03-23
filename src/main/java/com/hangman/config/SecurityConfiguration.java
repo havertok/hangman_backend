@@ -7,19 +7,24 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.session.SessionManagementFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 @Configuration
 @EnableWebSecurity
@@ -29,38 +34,64 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private UserDetailsService myUserDetailsService;
 	
-	  @Bean
-	  public AuthenticationProvider daoAuthenticationProvider() {
-	    DaoAuthenticationProvider provider =  new DaoAuthenticationProvider();
-	    provider.setPasswordEncoder(passwordEncoder());
-	    provider.setUserDetailsService(myUserDetailsService);
-	    return provider;
-	  }
+	@Autowired
+	private JwtAuthenticationEntryPoint jwtEntry;
+	
+	@Autowired
+	private JwtRequestFilter jwtFilter;
+	
+	@Bean
+	public AuthenticationProvider daoAuthenticationProvider() {
+		 DaoAuthenticationProvider provider =  new DaoAuthenticationProvider();
+		 provider.setPasswordEncoder(passwordEncoder());
+		 provider.setUserDetailsService(myUserDetailsService);
+		 return provider;
+		}
+
+	@Autowired
+	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+		// configure AuthenticationManager so that it knows from where to load
+		// user for matching credentials
+		// Use BCryptPasswordEncoder
+		auth.userDetailsService(myUserDetailsService).passwordEncoder(passwordEncoder());
+	}
+
+	@Bean
+	@Override
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
 	  
-	  @Bean
-	  public PasswordEncoder passwordEncoder() {
-	    return new BCryptPasswordEncoder();
-	  }
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 	  
-	  @Bean
-	  @Order(Ordered.HIGHEST_PRECEDENCE) 
-	  public CorsFilter corsFilter() {
-	      final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-	      final CorsConfiguration config = new CorsConfiguration();
-	      config.setAllowCredentials(true);
-	      //"http://localhost:3000" is what did it, I will have to read up on url filtering syntax
-	      config.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:3000/Home", "http://localhost:3000/Login"));
-	      config.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Access-Control-Allow-Origin", "X-Auth-Token"));
-	      //config.setExposedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Authorization", "Access-Control-Request-Allow-Origin", "Access-Control-Allow-Credentials"));
-	      config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "OPTIONS", "DELETE", "PATCH"));
-	      source.registerCorsConfiguration("/**", config);
-	      return new CorsFilter(source);
+//	  @Bean
+//	  @Order(Ordered.HIGHEST_PRECEDENCE) 
+//	  public CorsFilter corsFilter() {
+//	      final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//	      final CorsConfiguration config = new CorsConfiguration();
+//	      config.setAllowCredentials(true);
+//	      //"http://localhost:3000" is what did it, I will have to read up on url filtering syntax
+//	      config.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:3000/Home", "http://localhost:3000/Login"));
+//	      config.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Access-Control-Allow-Origin", "X-Auth-Token"));
+//	      //config.setExposedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Authorization", "Access-Control-Request-Allow-Origin", "Access-Control-Allow-Credentials"));
+//	      config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "OPTIONS", "DELETE", "PATCH"));
+//	      source.registerCorsConfiguration("/**", config);
+//	      return new CorsFilter(source);
+//	  }
+	  
+	  public void addCorsMappings(CorsRegistry registry) {
+		  registry.addMapping("/**").allowedOrigins("*")
+		  .allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH").allowedHeaders("*");
 	  }
 	
 	  @Override
 	  protected void configure(HttpSecurity http) throws Exception {  
 	      http
-	       .addFilterBefore(corsFilter(), SessionManagementFilter.class)
+	       //.addFilterBefore(corsFilter(), SessionManagementFilter.class)
+	       .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 	       .csrf().disable() //another attempt to fix cors
 	       .authorizeRequests()
 	         .antMatchers("/puzzles/all", "/puzzles/modify", "/register", "/user/all").permitAll() //puzzles/modify and /user/all will eventuall be blocked
@@ -74,7 +105,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	       .logout() 
 	         .permitAll()
 	         .and()
-	       .httpBasic(); 
+	       .exceptionHandling().authenticationEntryPoint(jwtEntry).and().sessionManagement()
+	       .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+	       //.httpBasic(); 
 	  }
 	
 
