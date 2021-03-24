@@ -91,11 +91,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	  protected void configure(HttpSecurity http) throws Exception {  
 	      http
 	       //.addFilterBefore(corsFilter(), SessionManagementFilter.class)
-	       .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+	       .cors()
+	         .and()
 	       .csrf().disable() //another attempt to fix cors
 	       .authorizeRequests()
-	         .antMatchers("/puzzles/all", "/puzzles/modify", "/register", "/user/all").permitAll() //puzzles/modify and /user/all will eventuall be blocked
-	         .antMatchers(HttpMethod.OPTIONS, "/**").permitAll() //Should allow cors freflight (options) requests
+	         .antMatchers("/puzzles/all", "/puzzles/modify", "/register", "/user/all").permitAll() //puzzles/modify and /user/all will eventually be blocked
+	         .antMatchers(HttpMethod.OPTIONS, "/**").permitAll() //Should allow cors preflight (options) requests
 	         .anyRequest().authenticated() 
 	         .and()
 	       .formLogin() 
@@ -107,6 +108,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	         .and()
 	       .exceptionHandling().authenticationEntryPoint(jwtEntry).and().sessionManagement()
 	       .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+	      http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 	       //.httpBasic(); 
 	  }
 	

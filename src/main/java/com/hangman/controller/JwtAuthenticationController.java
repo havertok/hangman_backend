@@ -7,6 +7,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,6 +20,7 @@ import com.hangman.util.JwtTokenProvider;
 
 //TODO: Maybe.  Integrate this into usercontroller
 @RestController
+@CrossOrigin //NB: using CorsMappings instead of a filter in SecurityConfig requires this annotation for our controllers
 public class JwtAuthenticationController {
 	
 	@Autowired
