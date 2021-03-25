@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,14 @@ public class UserService implements UserDetailsService{
 	
 	@Autowired
 	private UserStore userStore;
+	
+	public boolean doesEmailExist(String email) {
+		return userStore.existsByEmail(email);
+	}
+	
+	public boolean doesUsernameExit(String username) {
+		return userStore.existsByUsername(username);
+	}
 	
 	public UserModel getUserByName(String name) {
 		Optional<UserModel> userDetails = userStore.findByUsername(name);
@@ -44,7 +53,7 @@ public class UserService implements UserDetailsService{
 		if(userDetails.isPresent()) {
 			return userDetails.get().getUsername();
 		} else {
-			return null; //TODO: want to add more elegant error handling.
+			return "No user of that id found!"; //TODO: want to add more elegant error handling.
 		}
 	}
 	
@@ -73,7 +82,6 @@ public class UserService implements UserDetailsService{
 		}
 		
 		return temp;
-		
 	}
 
 	@Override

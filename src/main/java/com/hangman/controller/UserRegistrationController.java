@@ -24,17 +24,19 @@ import com.hangman.service.UserRegistrationService;
 public class UserRegistrationController {
 	
 	@Autowired
-	private UserRegistrationService urServ;
+	private UserRegistrationService urServ; //user registration service does not have the same methods (it does not implement UserDetailsService).
 	
 	@RequestMapping(value="/register", method=RequestMethod.POST)
 	public ResponseEntity<String> postNewUser(@RequestBody UserModelDTO userDTO) {
 		UserModel newuser = new UserModel();
 		if(userDTO.getPassword().equals(userDTO.getMatchingPassword())) {
 			newuser.setUsername(userDTO.getUsername());
-			newuser.setPassword(userDTO.getPassword()); //we need to hash this
+			newuser.setPassword(userDTO.getPassword()); //will be added in u
 			if(userDTO.getEmail() != null) {
 				newuser.setEmail(userDTO.getEmail());
 			}
+		} else {
+			return new ResponseEntity<>("Passwords do not match.", HttpStatus.BAD_REQUEST); //might put this validation on front end
 		}
 		if(newuser.getUsername() == null) {
 			return new ResponseEntity<>("User object malformed.", HttpStatus.BAD_REQUEST);
@@ -56,7 +58,7 @@ public class UserRegistrationController {
 	@RequestMapping(value="/tregister", method=RequestMethod.GET)
 	public String getRegistrationPage(Model model) {
 	    UserModelDTO userDto = new UserModelDTO();
-	    model.addAttribute("user", userDto);
+	    model.addAttribute("user", userDto); //ties the "user" fields in the thymeleaf server page to our userDTO object
 		return "registrationPage";
 	}
 	

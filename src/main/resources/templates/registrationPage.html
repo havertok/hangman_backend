@@ -2,7 +2,7 @@
 	<html xmlns:th="http://www.thymeleaf.org">
 <body>
 	<h1>Registration Form</h1>
-	<form action="#" th:action="@{/register}" th:object="${user}" method="POST" enctype="utf8">
+	<form action="#" th:action="@{/tregister}" th:object="${user}" method="POST" enctype="utf8">
 		<div>
 			<label>Username</label> <input
 				th:field="*{username}" />
@@ -28,6 +28,6 @@
 		<button type="submit">Submit</button>
 	</form>
 
-	<a th:href="@{/login.html}">login</a>
+	<!--  We aren't doing a login with static template <a th:href="@{/login.html}">login</a> -->
 </body>
 </html>
