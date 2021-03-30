@@ -1,6 +1,7 @@
 package com.hangman.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -35,12 +36,19 @@ public class JwtAuthenticationController {
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authRequest) throws Exception 
 	{
+		System.out.println(authRequest.toString());
 		authRequest.getPassword();
 		final UserDetails userDetails = uServ.loadUserByUsername(authRequest.getUsername());
 		final String token = jwtToken.generateToken(userDetails);
 		return ResponseEntity.ok(new JwtResponse(token));
 	}
 	
+	@RequestMapping(value = "/authenticate*", method = RequestMethod.POST)
+	public ResponseEntity<?> badURLFallback(@RequestBody JwtRequest authRequest) throws Exception 
+	{
+		return new ResponseEntity<>("Malformed URL!", HttpStatus.BAD_REQUEST);
+	
+	}
 	private void authenticate(String username, String password) throws Exception {
 		try {
 			authManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
