@@ -1,6 +1,9 @@
 package com.hangman.config;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.session.SessionManagementFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -81,36 +85,50 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //	      source.registerCorsConfiguration("/**", config);
 //	      return new CorsFilter(source);
 //	  }
-	  
-	  public void addCorsMappings(CorsRegistry registry) {
-		  registry.addMapping("/**").allowedOrigins("*")
-		  .allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH").allowedHeaders("*");
-	  }
 	
-	  @Override
-	  protected void configure(HttpSecurity http) throws Exception {  
-	      http
-	       //.addFilterBefore(corsFilter(), SessionManagementFilter.class)
-	       .cors()
-	         .and()
-	       .csrf().disable() //another attempt to fix cors
-	       .authorizeRequests()
-	         .antMatchers("/puzzles/all", "/puzzles/modify", "/tregister", "/user/all").permitAll() //puzzles/modify and /user/all will eventually be blocked /tregister is the builtin registration form for testing
-	         .antMatchers(HttpMethod.OPTIONS, "/**").permitAll() //Should allow cors preflight (options) requests
-	         .anyRequest().authenticated() 
-	         .and()
-	       .formLogin() 
-	         .loginPage("/authenticate") // was "/user/login" now "/authenticate" to use jwtController
-	         .permitAll()
-	         .and()
-	       .logout() 
-	         .permitAll()
-	         .and()
-	       .exceptionHandling().authenticationEntryPoint(jwtEntry).and().sessionManagement()
-	       .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-	      http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-	       //.httpBasic(); 
-	  }
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedMethods(Arrays.asList("GET","POST", "OPTIONS"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    }
+	  
+//	public void addCorsMappings(CorsRegistry registry) {
+//		 registry.addMapping("/**").allowedOrigins("*")
+//		 	.allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH").allowedHeaders("*");
+//	}
+	
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+	http
+	 //.addFilterBefore(corsFilter(), SessionManagementFilter.class)
+	 .cors().and()
+	 .csrf().disable() //another attempt to fix cors
+	 .authorizeRequests()
+	 .antMatchers("/puzzles/all", "/puzzles/modify", "/tregister", "/user/all").permitAll() //puzzles/modify and /user/all will eventually be blocked /tregister is the builtin registration form for testing
+	 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll() //Should allow cors preflight (options) requests
+	 .anyRequest().authenticated() 
+	 .and()
+	 .formLogin() 
+	 .loginPage("/authenticate") // was "/user/login" now "/authenticate" to use jwtController
+	 .permitAll()
+	 .and()
+	 .logout() 
+	 .permitAll()
+	 .and()
+	 .exceptionHandling().authenticationEntryPoint(jwtEntry).and().sessionManagement()
+	 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+	http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+	 //.httpBasic(); 
+	}
 	
 
 }
