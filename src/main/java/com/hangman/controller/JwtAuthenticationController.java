@@ -33,14 +33,17 @@ public class JwtAuthenticationController {
 	@Autowired
 	private AuthenticationManager authManager;
 	
+	//JwtRequest is a pojo that has a username and password.
+	//Right now we don't even verify the password, just check if the username exists and, if it does, returns a token
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authRequest) throws Exception 
 	{
-		System.out.println(authRequest.toString());
-		authRequest.getPassword();
+		System.out.println("REQUEST: " + authRequest.toString());
+		authenticate(authRequest.getUsername(), authRequest.getPassword());
 		final UserDetails userDetails = uServ.loadUserByUsername(authRequest.getUsername());
 		final String token = jwtToken.generateToken(userDetails);
-		return ResponseEntity.ok(new JwtResponse(token));
+		JwtResponse respToken = new JwtResponse(token);
+		return ResponseEntity.ok(respToken);
 	}
 	
 //	@RequestMapping(value = "/authenticate*", method = RequestMethod.POST)

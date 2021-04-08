@@ -24,12 +24,10 @@ public class JwtTokenProvider implements Serializable
 	@Value("${jwt.secret}")
 	private String secret;
 
-	// retrieve username from jwt token
 	public String getUsernameFromToken(String token) {
 		return getClaimFromToken(token, Claims::getSubject);
 	}
 
-	// retrieve expiration date from jwt token
 	public Date getExpirationDateFromToken(String token) {
 		return getClaimFromToken(token, Claims::getExpiration);
 	}
@@ -39,30 +37,26 @@ public class JwtTokenProvider implements Serializable
 		return claimsResolver.apply(claims);
 	}
 
-	// for retrieveing any information from token we will need the secret key
 	private Claims getAllClaimsFromToken(String token) {
 		return Jwts.parser().setSigningKey(secret)
 		.parseClaimsJws(token).getBody();
 	}
 
-	// check if the token has expired
 	private Boolean isTokenExpired(String token) {
 		final Date expiration = getExpirationDateFromToken(token);
 		return expiration.before(new Date());
 	}
 
-	// generate token for user
 	public String generateToken(UserDetails userDetails) {
 		Map<String, Object> claims = new HashMap<>();
 		String username = userDetails.getUsername();
 		return doGenerateToken(claims, username);
 	}
 
-	// while creating the token -
-	// 1. Define claims of the token, like Issuer, Expiration, Subject, and the ID
-	// 2. Sign the JWT using the HS512 algorithm and secret key.
-	// 3. According to JWS Compact
-	// compaction of the JWT to a URL-safe string
+	//Token has these attributes
+	//Claims: Issuer, Expiration, Subject, and ID
+	//Sign the JWT with HS512 and secret key.
+	//Compact token into string
 	private String doGenerateToken(Map<String, Object> claims, String subject) {
 		return Jwts.builder().setClaims(claims).setSubject(subject)
 			.setIssuedAt(new Date(System.currentTimeMillis()))
@@ -70,7 +64,6 @@ public class JwtTokenProvider implements Serializable
 			.signWith(SignatureAlgorithm.HS512, secret).compact();
 	}
 
-	// validate token
 	public Boolean validateToken(String token, UserDetails userDetails) {
 		final String username = getUsernameFromToken(token);
 		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
