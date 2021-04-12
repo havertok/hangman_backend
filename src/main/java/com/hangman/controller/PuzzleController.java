@@ -51,5 +51,10 @@ public class PuzzleController {
 			return new ResponseEntity<>("We got it dudes!", HttpStatus.ACCEPTED);
 		}
 	}
+	
+	@RequestMapping(value="/testAuth", method=RequestMethod.GET)
+	public ResponseEntity<String> testAuthGet(){
+		return new ResponseEntity<>("You are authorized!", HttpStatus.OK);
+	}
 
 }

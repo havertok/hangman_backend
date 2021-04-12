@@ -108,27 +108,29 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-	http
+		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+		http
 	 //.addFilterBefore(corsFilter(), SessionManagementFilter.class)
-	 .cors().and()
-	 .csrf().disable() //another attempt to fix cors
-	 .authorizeRequests()
-	 .antMatchers("/puzzles/all", "/puzzles/modify", "/tregister", "/user/all").permitAll() //puzzles/modify and /user/all will eventually be blocked /tregister is the builtin registration form for testing
-	 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll() //Should allow cors preflight (options) requests
-	 .anyRequest().authenticated() 
-	 .and()
-	 .formLogin() 
-	 .loginPage("/authenticate") // was "/user/login" now "/authenticate" to use jwtController
-	 .permitAll()
-	 .and()
-	 .logout() 
-	 .permitAll()
-	 .and()
-	 .exceptionHandling().authenticationEntryPoint(jwtEntry).and().sessionManagement()
-	 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-	http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+		.cors().and()
+		.csrf().disable() //another attempt to fix cors
+		.authorizeRequests()
+		.antMatchers("/puzzles/all", "/puzzles/modify", "/tregister", "/user/all", "/register").permitAll() //puzzles/modify and /user/all will eventually be blocked /tregister is the builtin registration form for testing
+		.antMatchers(HttpMethod.OPTIONS, "/**").permitAll() //Should allow cors preflight (options) requests
+		.anyRequest().authenticated() 
+		.and()
+		.formLogin() 
+		.loginPage("/authenticate") // was "/user/login" now "/authenticate" to use jwtController
+		.failureUrl("/")
+		.permitAll()
+		.and()
+		.logout() 
+		.permitAll()
+	 	.and()
+	 	.exceptionHandling().authenticationEntryPoint(jwtEntry).and().sessionManagement()
+	 	.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	 //.httpBasic(); 
 	}
 	
 
+	
 }
