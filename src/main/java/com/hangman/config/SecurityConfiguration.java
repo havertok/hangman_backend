@@ -114,14 +114,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		.cors().and()
 		.csrf().disable() //another attempt to fix cors
 		.authorizeRequests()
-		.antMatchers("/puzzles/all", "/puzzles/modify", "/tregister", "/user/all", "/register").permitAll() //puzzles/modify and /user/all will eventually be blocked /tregister is the builtin registration form for testing
+		.antMatchers("/puzzles/all", "/puzzles/modify", "/tregister", "/user/all", "/register", "/authenticate").permitAll() //puzzles/modify and /user/all will eventually be blocked /tregister is the builtin registration form for testing
 		.antMatchers(HttpMethod.OPTIONS, "/**").permitAll() //Should allow cors preflight (options) requests
 		.anyRequest().authenticated() 
-		.and()
-		.formLogin() 
-		.loginPage("/authenticate") // was "/user/login" now "/authenticate" to use jwtController
-		.failureUrl("/")
-		.permitAll()
 		.and()
 		.logout() 
 		.permitAll()

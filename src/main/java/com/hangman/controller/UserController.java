@@ -38,6 +38,7 @@ public class UserController {
 	
 	//returns a string for now, should eventually return java token or whatever
 	//JWT Token controller now does authentication, will move here once I get that working.
+	//Might just nix this (except for user testing) and use JwtAuthenticationController for all user stuff (which is really just logging in, regtering, and loggint out)
 	@RequestMapping(value="/login", method=RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<String> getLogin(@RequestBody Map<String, String> inputData){
 		String usernameI, passwordI;

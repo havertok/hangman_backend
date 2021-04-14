@@ -52,6 +52,7 @@ public class PuzzleController {
 		}
 	}
 	
+	//This is NOT on the allowAll list, so only logged in users should get this message
 	@RequestMapping(value="/testAuth", method=RequestMethod.GET)
 	public ResponseEntity<String> testAuthGet(){
 		return new ResponseEntity<>("You are authorized!", HttpStatus.OK);

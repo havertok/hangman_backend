@@ -46,21 +46,6 @@ public class JwtAuthenticationController {
 		return ResponseEntity.ok(respToken);
 	}
 	
-//	@RequestMapping(value = "/authenticate*", method = RequestMethod.POST)
-//	public ResponseEntity<?> badURLFallbackPost(@RequestBody JwtRequest authRequest) throws Exception 
-//	{
-//		return new ResponseEntity<>("Malformed URL!", HttpStatus.BAD_REQUEST);
-//	
-//	}
-//	
-//	//For some reason front end is sending get after it sends a post (which receives empty response)
-//	@RequestMapping(value = "/authenticate*", method = RequestMethod.GET)
-//	public ResponseEntity<?> badURLFallbackGet(@RequestBody JwtRequest authRequest) throws Exception 
-//	{
-//		return new ResponseEntity<>("Malformed URL! Also: why are you using get?", HttpStatus.BAD_REQUEST);
-//	
-//	}
-	
 	private void authenticate(String username, String password) throws Exception {
 		try {
 			authManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
