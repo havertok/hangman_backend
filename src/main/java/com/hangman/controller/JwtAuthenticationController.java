@@ -38,9 +38,11 @@ public class JwtAuthenticationController {
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authRequest) throws Exception 
 	{
-		System.out.println("REQUEST: " + authRequest.toString());
 		authenticate(authRequest.getUsername(), authRequest.getPassword());
 		final UserDetails userDetails = uServ.loadUserByUsername(authRequest.getUsername());
+		if(userDetails == null || !userDetails.getPassword().equals(authRequest.getPassword())) { //It should throw null not found, but just in case
+			return new ResponseEntity<>("There is no such user, or credentials were incorrect.", HttpStatus.BAD_REQUEST);
+		}
 		final String token = jwtToken.generateToken(userDetails);
 		JwtResponse respToken = new JwtResponse(token);
 		return ResponseEntity.ok(respToken);
